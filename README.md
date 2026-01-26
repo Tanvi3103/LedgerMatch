@@ -1,4 +1,4 @@
-# LedgerMatch – Financial Reconciliation Engine (SQL-Heavy Project)
+# LedgerMatch  Financial Reconciliation Engine 
 
 LedgerMatch is a SQL-driven financial reconciliation system designed to match bank transactions with internal ledger records.  
 The project simulates real-world finance reconciliation scenarios including exact matches, amount mismatches, and unmatched transactions, with full audit tracking.
