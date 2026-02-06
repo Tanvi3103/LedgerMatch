@@ -105,6 +105,7 @@ MatchRule = INTERNAL_ONLY
 
 ## 📁 Project Structure
 
+```
 LedgerMatch/
 │
 ├── sql/
@@ -114,6 +115,8 @@ LedgerMatch/
 │ ├── 06_reconciliation_logic/
 │
 ├── README.md
+```
+
 
 
 Each SQL file is **idempotent and ordered** to allow step-by-step execution.
