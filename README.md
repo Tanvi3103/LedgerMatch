@@ -1,105 +1,95 @@
-# LedgerMatch  Financial Reconciliation Engine 
 
-LedgerMatch is a SQL-driven financial reconciliation system designed to match bank transactions with internal ledger records.  
-The project simulates real-world finance reconciliation scenarios including exact matches, amount mismatches, and unmatched transactions, with full audit tracking.
+# LedgerMatch – Financial Reconciliation Engine
 
-This project focuses on **advanced SQL design**, **data integrity**, and **finance-domain logic**, rather than UI.
+![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-blue)
+![.NET Core](https://img.shields.io/badge/.NET%20Core-9.0-green)
+![Docker](https://img.shields.io/badge/Docker-Desktop-blue)
 
----
-
-## 🧠 Problem Statement
-
-In financial systems, transactions recorded internally must be reconciled against bank statements.  
-Differences can occur due to:
-- Timing issues
-- Amount discrepancies
-- Missing transactions on either side
-
-LedgerMatch implements a **rule-based, multi-pass reconciliation engine** to classify these cases accurately and auditably.
 
 ---
 
-## 🏗️ System Design Overview
+## ⚡ Quick Start
 
-**Core Concepts**
-- Run-based reconciliation (each execution is traceable)
-- Multi-pass matching strategy
-- Immutable reconciliation results
-- Explicit match rules for audit clarity
+```bash
+# Clone repo
+git clone https://github.com/Tanvi3103/LedgerMatch.git
+cd LedgerMatch
 
-**High-level flow**
+# Start SQL Server in Docker
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YourPassword" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+
+# Run SQL scripts in order using Azure Data Studio / SSMS
+# 01_database_setup → 02_tables → 03_seed_data → 06_reconciliation_logic
+
+# Optional: Run the backend API
+cd ReconciliationAPI
+dotnet run
+````
+
+API Swagger UI: `https://localhost:5001/swagger`
+
+---
+
+## 📝 Project Overview
+
+LedgerMatch is a **SQL-driven financial reconciliation system** that matches bank transactions with internal ledger records.
+
+It simulates real-world finance reconciliation including:
+
+* Exact matches
+* Amount mismatches
+* Bank-only / Internal-only transactions
+* Tolerance-based matching (± amount)
+
+> Focused on **data integrity**, **finance-domain logic**, and **audit-safe reconciliation**, rather than UI.
+
+---
+
+## 🏗️ System Design
+
+**Core Concepts:**
+
+* Run-based reconciliation (traceable executions)
+* Multi-pass matching strategy
+* Immutable results
+* Explicit match rules for audit clarity
+
+**Flow:**
+
 1. Load bank and internal transactions
 2. Create a reconciliation run
 3. Apply exact match rules
 4. Apply mismatch rules
-5. Classify unmatched transactions
+5. Identify unmatched transactions
 6. Generate reconciliation summary
 
 ---
 
 ## 🗄️ Database Schema
 
-### Key Tables
+**Key Tables:**
 
-- **BankTransactions**
-  - Raw transactions received from bank statements
+* `BankTransactions` – Raw bank data
+* `InternalTransactions` – Internal ledger data
+* `ReconciliationRun` – Tracks execution date/status
+* `ReconciliationResult` – Stores match outcomes & rules
 
-- **InternalTransactions**
-  - Transactions recorded in internal systems
+**Views:**
 
-- **ReconciliationRun**
-  - Tracks each reconciliation execution (date, status)
-
-- **ReconciliationResult**
-  - Stores match outcomes with rule classification
+* `vw_ReconciliationSummary` – Aggregated counts and totals
+* `vw_UnmatchedTransactions` – Detailed unmatched transactions
+* `vw_MatchDetails` – Full matched transaction info
 
 ---
 
 ## 🔁 Reconciliation Logic
-
-LedgerMatch uses a **multi-pass approach**:
-
-### Pass 1 – Exact Match
-Transactions are matched when:
-- Transaction date matches
-- Amount matches
-- Currency matches
-- Reference number matches
-
-Result:
-MatchStatus = MATCHED
-MatchRule = EXACT_MATCH
-
-
----
-
-### Pass 2 – Amount Mismatch
-Transactions match on reference, date, and currency but differ in amount.
-
-Result:
-MatchStatus = MISMATCH
-MatchRule = AMOUNT_MISMATCH
-
-
----
-
-### Pass 3 – Bank Only
-Transactions present in bank data but missing internally.
-
-Result:
-MatchStatus = UNMATCHED
-MatchRule = BANK_ONLY
-
-
----
-
-### Pass 4 – Internal Only
-Transactions present internally but missing in bank data.
-
-Result:
-MatchStatus = UNMATCHED
-MatchRule = INTERNAL_ONLY
-
+```
+Pass 1 – Exact Match:** Date, Amount, Currency, Reference match → `MATCHED / EXACT_MATCH`
+Pass 2 – Amount Mismatch:** Date, Currency, Reference match but different amount → `MISMATCH / AMOUNT_MISMATCH`
+Pass 3 – Bank Only:** Transaction exists only in bank → `UNMATCHED / BANK_ONLY`
+Pass 4 – Internal Only:** Transaction exists only internally → `UNMATCHED / INTERNAL_ONLY`
+Pass 5 – Tolerance Match:** Approximate amount match within tolerance → `MATCHED / TOLERANCE_MATCH`
+```
 
 ---
 
@@ -109,66 +99,77 @@ MatchRule = INTERNAL_ONLY
 LedgerMatch/
 │
 ├── sql/
-│ ├── 01_database_setup/
-│ ├── 02_tables/
-│ ├── 03_seed_data/
-│ ├── 06_reconciliation_logic/
+│   ├── 01_database_setup/
+│   ├── 02_tables/
+│   ├── 03_seed_data/
+│   └── 06_reconciliation_logic/
+│
+├── ReconciliationAPI/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Services/
+│   ├── Program.cs
+│   └── appsettings.json
 │
 ├── README.md
+└── LedgerMatch.sln
 ```
-
-
-
-Each SQL file is **idempotent and ordered** to allow step-by-step execution.
 
 ---
 
-## 🚀 How to Run the Project
+## 🚀 Running the Project
 
-### Prerequisites
-- Docker Desktop (macOS)
-- SQL Server container
-- VS Code with SQL extensions
-
-### Steps
-1. Start Docker Desktop
-2. Start SQL Server container
-3. Execute scripts in order:
-   - Database creation
-   - Table creation
-   - Seed data
-   - Reconciliation logic
-4. Run reconciliation summary script to view results
+1. **Start SQL Server in Docker**
+2. **Execute SQL scripts** (setup → tables → seed → reconciliation)
+3. **Run API** (optional, for programmatic access)
 
 ---
 
 ## 📊 Sample Output
 
-Reconciliation summary groups transactions by:
-- MatchStatus
-- MatchRule
+Reconciliation summary groups transactions by `MatchStatus` and `MatchRule`:
 
-This mirrors real financial reconciliation reports used in banking and accounting systems.
+```json
+[
+  {
+    "reconRunId": 1002,
+    "matchStatus": "MISMATCH",
+    "matchRule": "AMOUNT_MISMATCH",
+    "transactionCount": 1,
+    "totalAmount": 5000
+  },
+  {
+    "reconRunId": 1002,
+    "matchStatus": "UNMATCHED",
+    "matchRule": "BANK_ONLY",
+    "transactionCount": 1,
+    "totalAmount": 1800
+  }
+]
+```
 
 ---
 
 ## 🔮 Future Enhancements
 
-- Tolerance-based matching (± amount)
-- Partial matching rules
-- Performance tuning with indexes
-- Stored procedures for reconciliation runs
-- .NET API layer for reconciliation execution
-- Frontend dashboard (React)
+* Tolerance-based matching (± amount)
+* Partial matching rules
+* Performance tuning with indexes
+* Full .NET API for reconciliation execution
+* Frontend dashboard (React/Vue)
+* Export results to CSV / Excel
 
 ---
 
 ## 🎯 Why This Project
 
-This project demonstrates:
-- Advanced SQL joins and filtering
-- Real-world finance problem modeling
-- Audit-safe reconciliation design
-- Production-style data processing patterns
+* Demonstrates **advanced SQL joins, filtering, and aggregation**
+* Models a **real-world financial problem**
+* Implements **audit-safe, rule-based reconciliation**
+* Production-style data processing patterns
 
-It is intentionally SQL-heavy to reflect real enterprise data workloads.
+---
+
+
+
+
