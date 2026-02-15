@@ -1,0 +1,9 @@
+# SQL Server files
+*.mdf
+*.ldf
+
+# VS Code settings
+.vscode/
+
+# Mac system files
+.DS_Store

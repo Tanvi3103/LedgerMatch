@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReconciliationAPI", "ReconciliationAPI\ReconciliationAPI.csproj", "{9B0D013C-B398-10E3-E057-B05313AF2575}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B0D013C-B398-10E3-E057-B05313AF2575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B0D013C-B398-10E3-E057-B05313AF2575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B0D013C-B398-10E3-E057-B05313AF2575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B0D013C-B398-10E3-E057-B05313AF2575}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A7E6201-147C-4E30-98BA-9A1BBEA9F017}
+	EndGlobalSection
+EndGlobal
